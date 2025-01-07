@@ -299,3 +299,93 @@ Optional command parameters are as follows:
 - `-h | --help`：[ bool ]  Provide the help info, default: false.
 
 Note: Before using this tool for any operation, you need to stop the currently running node first. Usage instructions, please refer to [Leveldb Startup Optimization Plugins](../../developers/archive-manifest/).
+
+## DB Fork
+
+DB Fork provides the ability to modify the witnesses and other related data in the database to
+implement shadow fork testing, which includes:
+- Erase the historical witnesses and active witnesses
+- Write new witnesses to the state and update new active witnesses
+- Write new balance for new addresses
+- Set the new `latesteBlockHeaderTimestamp` to avoid the delay in producing blocks
+- Set the new `maintenanceTimeInterval` and `nextMaintenanceTime` if needed.
+
+### Obtain the state data
+To use the DB fork tool, you need to obtain the state data of the main chain first.There are three possible ways:
+
+- Download the [Lite FullNode](backup_restore.md#lite-fullnode-data-snapshot) data snapshot;
+
+- Download the [FullNode](backup_restore.md#fullnode-data-snapshot) data snapshot;
+
+- Launch the FullNode and sync directly.
+
+If we want the state data of specified block height, we can modify the `node.shutdown` option in the [config](https://github.com/tronprotocol/tron-deployment/blob/master/main_net_config.conf) to make the FullNode sync to the target height after downloading the snapshot.
+```conf
+node.shutdown = {
+#  BlockTime  = "54 59 08 * * ?" # if block header time in persistent db matched.
+#  BlockHeight = 33350800 # if block header height in persistent db matched.
+#  BlockCount = 12 # block sync count after node start.
+}
+```
+![](../../images/shadow-fork.png)
+
+### Run the DBFork tool
+Run the DBFork tool in the Toolkit to modify the related data. The available parameters are:
+- `-c | --config=<config>`: config the new witnesses, balances, etc for shadow
+  fork. Default: fork.conf
+- `-d | --database-directory=<database>`: database directory path. Default: output-directory
+- `-h | --help`
+- `-r | --retain-witnesses`: retain the previous witnesses and active witnesses. Default: false
+
+The example of `fork.config` can be:
+
+```conf
+witnesses = [
+  {
+    address: TS1hu4ZCcwBFYpQqUGoWy1GWBzamqxiT5W,
+    url = "http://meme5.com",
+    voteCount = 100000036
+  },
+  {
+    address: TRY18iTFy6p8yhWiCt1dhd2gz2c15ungq3,
+    voteCount = 100000035
+  }
+]
+assets = [
+  {
+    accountName = "Meme"
+    address = "TS1hu4ZCcwBFYpQqUGoWy1GWBzamqxiT5W"
+    balance = "99000000000000000"
+  },
+  {
+    accountType = "Normal"
+    address = "TRY18iTFy6p8yhWiCt1dhd2gz2c15ungq3"
+    balance = "99000000000000000"
+  }
+]
+
+latestBlockHeaderTimestamp = 1735628883000
+
+# maintenanceTimeInterval = 21600000
+# nextMaintenanceTime = 1735628894000
+```
+Execute fork command:
+```shell script
+# full command
+  java -jar Toolkit.jar db fork [-h] [-c=<config>] [-d=<database>]
+# examples
+  java -jar Toolkit.jar db fork -c fork.conf -d output-directory
+```
+
+### Launch the FullNode
+Launch the FullNode against the modified state. To launch the node smoothly, we may need to change some parameters in the [config](https://github.com/tronprotocol/tron-deployment/blob/master/main_net_config.conf):
+```config
+needSyncCheck = false
+minParticipation = 0
+node.p2p.version != 11111
+```
+To isolate from the mainnet and other testnets, The `node.p2p.version` can be arbitrary number different from the mainnet and testnets.
+
+To produce the blocks, we also need to configure the private key of the witness and run the FullNode with the `--witness` parameter,  which is similar to the mainnet.
+
+If another node wants to join the shadow fork network, it needs to execute the above steps, or it copies the state data from the first shadow fork node directly. Then they can sync and produce blocks to form a local testnet.
