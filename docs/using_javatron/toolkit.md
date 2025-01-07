@@ -7,6 +7,7 @@ The Toolkit integrates a series of tools of java-tron, and more functions will b
 * [Data Copy](#data-copy)
 * [Data Conversion](#data-conversion)
 * [LevelDB Startup Optimization](#leveldb-startup-optimization)
+* [Database Fork Tool](#database-fork-tool)
 
 The following describes the acquisition and use of the Toolkit toolbox in detail.
 
@@ -300,9 +301,9 @@ Optional command parameters are as follows:
 
 Note: Before using this tool for any operation, you need to stop the currently running node first. Usage instructions, please refer to [Leveldb Startup Optimization Plugins](../../developers/archive-manifest/).
 
-## DB Fork
+## Database Fork Tool
 
-DB Fork provides the ability to modify the witnesses and other related data in the database to
+Database fork tool provides the ability to modify the witnesses and other related data in the database to
 implement shadow fork testing, which includes:
 - Erase the historical witnesses and active witnesses
 - Write new witnesses to the state and update new active witnesses
@@ -311,7 +312,7 @@ implement shadow fork testing, which includes:
 - Set the new `maintenanceTimeInterval` and `nextMaintenanceTime` if needed.
 
 ### Obtain the state data
-To use the DB fork tool, you need to obtain the state data of the main chain first.There are three possible ways:
+To use the DBFork tool, you need to obtain the state data of the main chain first.There are three possible ways:
 
 - Download the [Lite FullNode](backup_restore.md#lite-fullnode-data-snapshot) data snapshot;
 
@@ -327,7 +328,7 @@ node.shutdown = {
 #  BlockCount = 12 # block sync count after node start.
 }
 ```
-![](../../images/shadow-fork.png)
+![image](https://github.com/Federico2014/documentation-en/blob/master/images/shadow-fork.png)
 
 ### Run the DBFork tool
 Run the DBFork tool in the Toolkit to modify the related data. The available parameters are:
