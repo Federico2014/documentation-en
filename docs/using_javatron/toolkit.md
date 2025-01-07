@@ -328,7 +328,8 @@ node.shutdown = {
 #  BlockCount = 12 # block sync count after node start.
 }
 ```
-![image](https://github.com/Federico2014/documentation-en/blob/master/images/shadow-fork.png)
+
+![image](../../images/shadow-fork.png)
 
 ### Run the DBFork tool
 Run the DBFork tool in the Toolkit to modify the related data. The available parameters are:
