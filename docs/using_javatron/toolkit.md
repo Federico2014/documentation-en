@@ -328,6 +328,8 @@ node.shutdown = {
 #  BlockCount = 12 # block sync count after node start.
 }
 ```
+Please refer [Startup a fullnode](installing_javatron.md#startup-a-fullnode) to launch the FullNode and sync.
+
 
 ![image](../../images/shadow-fork.png)
 
@@ -388,6 +390,6 @@ node.p2p.version != 11111
 ```
 To isolate from the mainnet and other testnets, The `node.p2p.version` can be arbitrary number different from the mainnet and testnets.
 
-To produce the blocks, we also need to configure the private key of the witness and run the FullNode with the `--witness` parameter,  which is similar to the mainnet.
+To produce the blocks, we also need to configure the private key of the witness and run the FullNode with the `--witness` parameter, please refer [startup a fullnode that produces blocks](installing_javatron.md#startup-a-fullnode-that-produces-blocks).
 
-If another node wants to join the shadow fork network, it needs to execute the above steps, or it copies the state data from the first shadow fork node directly. Then they can sync and produce blocks to form a local testnet.
+If another node wants to join the shadow fork network, it needs to execute the above steps, or it copies the state data from the first shadow fork node directly. They need to configure the same `node.p2p.version` and add the `seed.node` in the config, then they can sync and produce blocks to form a local testnet.
